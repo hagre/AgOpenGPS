@@ -142,7 +142,6 @@
     <Compile Include="Classes\CModuleComm.cs" />
     <Compile Include="Classes\CNMEA.cs" />
     <Compile Include="Classes\CSection.cs" />
-    <Compile Include="Classes\CPointData.cs" />
     <Compile Include="Classes\CVehicle.cs" />
     <Compile Include="Classes\CWorldGrid.cs" />
     <Compile Include="Classes\CTurn.cs" />
@@ -270,6 +269,12 @@
     <Compile Include="Forms\FormFlags.Designer.cs">
       <DependentUpon>FormFlags.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Settings\FormHeadingGraph.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Settings\FormHeadingGraph.Designer.cs">
+      <DependentUpon>FormHeadingGraph.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Settings\FormSteerGraph.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -374,7 +379,6 @@
     <Compile Include="Forms\Guidance\FormTram.Designer.cs">
       <DependentUpon>FormTram.cs</DependentUpon>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Classes\gStr.Empty.Designer.cs">
       <DependentUpon>gStr.Empty.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -482,7 +486,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs" />
     <Compile Include="Forms\UDPComm.Designer.cs">
       <SubType>Form</SubType>
       <DependentUpon>FormGPS.cs</DependentUpon>
@@ -587,6 +590,9 @@
     <EmbeddedResource Include="Forms\Settings\FormSteer.resx">
       <DependentUpon>FormSteer.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Settings\FormHeadingGraph.resx">
+      <DependentUpon>FormHeadingGraph.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Settings\FormSteerGraph.resx">
       <DependentUpon>FormSteerGraph.cs</DependentUpon>
@@ -718,6 +724,9 @@
   <ItemGroup>
     <Content Include="AOG.ico" />
     <Content Include="aChangeLog.txt" />
+    <None Include="btnImages\Images\z_LateralManual.png" />
+    <None Include="btnImages\Config\ConV_GuidanceLookAhead.png" />
+    <None Include="btnImages\Config\ConS_Respnse.png" />
     <None Include="btnImages\Config\ConV_ABLineLength.png" />
     <None Include="btnImages\Config\ConD_FloorTexture.png" />
     <None Include="btnImages\Config\Con_FeatureMenu.png" />

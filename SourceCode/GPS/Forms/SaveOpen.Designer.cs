@@ -263,12 +263,6 @@ namespace AgOpenGPS
                             ABLine.lineArr[i].heading = glm.toRadians(double.Parse(words[1], CultureInfo.InvariantCulture));
                             ABLine.lineArr[i].origin.easting = double.Parse(words[2], CultureInfo.InvariantCulture);
                             ABLine.lineArr[i].origin.northing = double.Parse(words[3], CultureInfo.InvariantCulture);
-
-                            ABLine.lineArr[i].ref1.easting = ABLine.lineArr[i].origin.easting - (Math.Sin(ABLine.lineArr[i].heading) * 1000.0);
-                            ABLine.lineArr[i].ref1.northing = ABLine.lineArr[i].origin.northing - (Math.Cos(ABLine.lineArr[i].heading) *1000.0);
-
-                            ABLine.lineArr[i].ref2.easting = ABLine.lineArr[i].origin.easting + (Math.Sin(ABLine.lineArr[i].heading) * 1000.0);
-                            ABLine.lineArr[i].ref2.northing = ABLine.lineArr[i].origin.northing + (Math.Cos(ABLine.lineArr[i].heading) * 1000.0);
                             ABLine.numABLines++;
                         }
                     }
@@ -370,9 +364,6 @@ namespace AgOpenGPS
                     line = reader.ReadLine();
                     string[] offs = line.Split(',');
 
-                    //create a new grid
-                    worldGrid.CreateWorldGrid(pn.fix.northing, pn.fix.easting);
-
                     //convergence angle update
                     if (!reader.EndOfStream)
                     {
@@ -398,8 +389,6 @@ namespace AgOpenGPS
                             sim.latitude = Properties.Settings.Default.setGPS_SimLatitude = pn.latitude;
                             sim.longitude = Properties.Settings.Default.setGPS_SimLongitude = pn.longitude;
                             Properties.Settings.Default.Save();
-
-                            worldGrid.CreateWorldGrid(0, 0);
                         }
 
                         pn.SetLocalMetersPerDegree();
@@ -490,6 +479,8 @@ namespace AgOpenGPS
                             int verts = int.Parse(line);
 
                             section[0].triangleList = new List<vec3>();
+                            section[0].triangleList.Capacity = verts + 1;
+
                             section[0].patchList.Add(section[0].triangleList);
 
 
@@ -568,6 +559,7 @@ namespace AgOpenGPS
                             vec3 vecFix = new vec3(0, 0, 0);
 
                             ct.ptList = new List<vec3>();
+                            ct.ptList.Capacity = verts + 1;
                             ct.stripList.Add(ct.ptList);
 
                             for (int v = 0; v < verts; v++)
@@ -1569,7 +1561,7 @@ namespace AgOpenGPS
         //save nmea sentences
         public void FileSaveNMEA()
         {
-            using (StreamWriter writer = new StreamWriter((fieldsDirectory + "\\NMEA_log.txt"), true))
+            using (StreamWriter writer = new StreamWriter("zAOG_log.txt", true))
             {
                 writer.Write(pn.logNMEASentence.ToString());
             }
@@ -1739,6 +1731,51 @@ namespace AgOpenGPS
             kml.WriteStartElement("kml", "http://www.opengis.net/kml/2.2");
             kml.WriteStartElement("Document");
 
+            //Boundary  ----------------------------------------------------------------------
+            kml.WriteStartElement("Folder");
+            kml.WriteElementString("name", "Boundaries");
+
+            for (int i = 0; i < bnd.bndArr.Count; i++)
+            {
+                kml.WriteStartElement("Placemark");
+                if (i == 0) kml.WriteElementString("name", currentFieldDirectory);
+
+                //lineStyle
+                kml.WriteStartElement("Style");
+                kml.WriteStartElement("LineStyle");
+                if (i == 0) kml.WriteElementString("color", "ffdd00dd");
+                else kml.WriteElementString("color", "ff4d3ffd");
+                kml.WriteElementString("width", "4");
+                kml.WriteEndElement(); // <LineStyle>
+
+                kml.WriteStartElement("PolyStyle");
+                if (i == 0) kml.WriteElementString("color", "407f3f55");
+                else kml.WriteElementString("color", "703f38f1");
+                kml.WriteEndElement(); // <PloyStyle>
+                kml.WriteEndElement(); //Style
+
+                kml.WriteStartElement("Polygon");
+                kml.WriteElementString("tessellate", "1");
+                kml.WriteStartElement("outerBoundaryIs");
+                kml.WriteStartElement("LinearRing");
+
+                //coords
+                kml.WriteStartElement("coordinates");
+                string bndPts = "";
+                if (bnd.bndArr[i].bndLine.Count > 3)
+                    bndPts = GetBoundaryPointsLatLon(i);
+                kml.WriteRaw(bndPts);
+                kml.WriteEndElement(); // <coordinates>
+
+                kml.WriteEndElement(); // <Linear>
+                kml.WriteEndElement(); // <OuterBoundary>
+                kml.WriteEndElement(); // <Polygon>
+                kml.WriteEndElement(); // <Placemark>
+            }
+
+            kml.WriteEndElement(); // <Folder>  
+            //End of Boundary
+
             //guidance lines AB
             kml.WriteStartElement("Folder");
             kml.WriteElementString("name", "AB_Lines");
@@ -1764,8 +1801,11 @@ namespace AgOpenGPS
                 kml.WriteElementString("tessellate", "1");
                 kml.WriteStartElement("coordinates");
 
-                linePts = pn.GetLocalToWSG84_KML(ABLine.lineArr[i].ref1.easting, ABLine.lineArr[i].ref1.northing);
-                linePts += pn.GetLocalToWSG84_KML(ABLine.lineArr[i].ref2.easting, ABLine.lineArr[i].ref2.northing);
+                linePts = pn.GetLocalToWSG84_KML(ABLine.lineArr[i].origin.easting - (Math.Sin(ABLine.lineArr[i].heading) * ABLine.abLength),
+                    ABLine.lineArr[i].origin.northing - (Math.Cos(ABLine.lineArr[i].heading) * ABLine.abLength));
+                linePts += pn.GetLocalToWSG84_KML(ABLine.lineArr[i].origin.easting + (Math.Sin(ABLine.lineArr[i].heading) * ABLine.abLength),
+                    ABLine.lineArr[i].origin.northing + (Math.Cos(ABLine.lineArr[i].heading) * ABLine.abLength));
+                kml.WriteRaw(linePts);
 
                 kml.WriteEndElement(); // <coordinates>
                 kml.WriteEndElement(); // <LineString>
@@ -1812,6 +1852,40 @@ namespace AgOpenGPS
             }
             kml.WriteEndElement(); // <Folder>   
 
+            //Recorded Path
+            kml.WriteStartElement("Folder");
+            kml.WriteElementString("name", "Recorded Path");
+            kml.WriteElementString("visibility", "1");
+
+            linePts = "";
+            kml.WriteStartElement("Placemark");
+            kml.WriteElementString("visibility", "1");
+
+            kml.WriteElementString("name", "Path " + 1);
+            kml.WriteStartElement("Style");
+
+            kml.WriteStartElement("LineStyle");
+            kml.WriteElementString("color", "ff44ffff");
+            kml.WriteElementString("width", "2");
+            kml.WriteEndElement(); // <LineStyle>
+            kml.WriteEndElement(); //Style
+
+            kml.WriteStartElement("LineString");
+            kml.WriteElementString("tessellate", "1");
+            kml.WriteStartElement("coordinates");
+
+            for (int j = 0; j < recPath.recList.Count; j++)
+            {
+                linePts += pn.GetLocalToWSG84_KML(recPath.recList[j].easting, recPath.recList[j].northing);
+            }
+            kml.WriteRaw(linePts);
+
+            kml.WriteEndElement(); // <coordinates>
+            kml.WriteEndElement(); // <LineString>
+
+            kml.WriteEndElement(); // <Placemark>
+            kml.WriteEndElement(); // <Folder>
+
             //flags  *************************************************************************
             kml.WriteStartElement("Folder");
             kml.WriteElementString("name", "Flags");
@@ -1843,51 +1917,6 @@ namespace AgOpenGPS
             }
             kml.WriteEndElement(); // <Folder>   
             //End of Flags
-
-                //Boundary  ----------------------------------------------------------------------
-            kml.WriteStartElement("Folder");
-            kml.WriteElementString("name", "Boundaries");
-
-            for (int i = 0; i < bnd.bndArr.Count; i++)
-            {
-                kml.WriteStartElement("Placemark");
-                if (i == 0) kml.WriteElementString("name", currentFieldDirectory);
-
-                //lineStyle
-                kml.WriteStartElement("Style");
-                kml.WriteStartElement("LineStyle");
-                if (i == 0) kml.WriteElementString("color", "ffdd00dd");
-                else kml.WriteElementString("color", "ff4d3ffd");
-                kml.WriteElementString("width", "4");
-                kml.WriteEndElement(); // <LineStyle>
-
-                kml.WriteStartElement("PolyStyle");
-                if (i == 0)   kml.WriteElementString("color", "407f3f55");
-                else kml.WriteElementString("color", "703f38f1");
-                kml.WriteEndElement(); // <PloyStyle>
-                kml.WriteEndElement(); //Style
-
-                kml.WriteStartElement("Polygon");
-                kml.WriteElementString("tessellate", "1");
-                kml.WriteStartElement("outerBoundaryIs");
-                kml.WriteStartElement("LinearRing");
-
-                //coords
-                kml.WriteStartElement("coordinates");
-                string bndPts = "";
-                if (bnd.bndArr[i].bndLine.Count > 3)
-                    bndPts = GetBoundaryPointsLatLon(i);
-                kml.WriteRaw(bndPts);
-                kml.WriteEndElement(); // <coordinates>
-
-                kml.WriteEndElement(); // <Linear>
-                kml.WriteEndElement(); // <OuterBoundary>
-                kml.WriteEndElement(); // <Polygon>
-                kml.WriteEndElement(); // <Placemark>
-            }
-
-            kml.WriteEndElement(); // <Folder>  
-            //End of Boundary
 
             //Sections  ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
             kml.WriteStartElement("Folder");

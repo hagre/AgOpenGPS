@@ -8,6 +8,8 @@ namespace AgOpenGPS
         //Roll and heading from the IMU
         public double imuHeading = 99999, prevIMUHeading = 0, imuRoll = 88888;
 
+        public System.Int16 angVel;
+
         //actual value in degrees
         public double rollZero;
 
@@ -15,26 +17,28 @@ namespace AgOpenGPS
         public double rollFilter;
 
         //is the auto steer in auto turn on mode or not
-        public bool isAutoSteerAuto, isRollInvert;
+        public bool isAutoSteerAuto, isRollInvert, isDualAsIMU, isReverseOn;
 
         //the factor for fusion of GPS and IMU
-        public double fusionWeight;
+        public double forwardComp, reverseComp;
 
         //constructor
         public CAHRS()
         {
-            //mf = _f;
-
             rollZero = Properties.Settings.Default.setIMU_rollZero;
-            //pitchZeroX16 = Properties.Settings.Default.setIMU_pitchZeroX16;
 
             rollFilter = Properties.Settings.Default.setIMU_rollFilter;
 
             isAutoSteerAuto = Properties.Settings.Default.setAS_isAutoSteerAutoOn;
 
-            fusionWeight = Properties.Settings.Default.setIMU_fusionWeight;
+            forwardComp = Properties.Settings.Default.setGPS_forwardComp;
+            reverseComp = Properties.Settings.Default.setGPS_reverseComp;
+
             isRollInvert = Properties.Settings.Default.setIMU_invertRoll;
 
+            isDualAsIMU = Properties.Settings.Default.setIMU_isDualAsIMU;
+
+            isReverseOn = Properties.Settings.Default.setIMU_isReverseOn;
         }
     }
 }

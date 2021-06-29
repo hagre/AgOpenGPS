@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace AgOpenGPS
 {
@@ -21,6 +22,10 @@ namespace AgOpenGPS
 
         // Status delegate
         private double rollK = 0;
+        private int udpWatchCounts = 0;
+        public int udpWatchLimit = 70;
+
+        private readonly Stopwatch udpWatch = new Stopwatch();
 
         private void ReceiveFromAgIO(byte[] data)
         {
@@ -30,6 +35,17 @@ namespace AgOpenGPS
                 {
                     case 0xD6:
                         {
+                            if (udpWatch.ElapsedMilliseconds < udpWatchLimit)
+                            {
+                                udpWatchCounts++;
+                                if (isLogNMEA) pn.logNMEASentence.Append("*** "
+                                    + DateTime.UtcNow.ToString("ss.ff -> ", CultureInfo.InvariantCulture)
+                                    + udpWatch.ElapsedMilliseconds + "\r\n");
+                                return;
+                            }
+                            udpWatch.Reset();
+                            udpWatch.Start();
+
                             double Lon = BitConverter.ToDouble(data, 5);
                             double Lat = BitConverter.ToDouble(data, 13);
 
@@ -44,9 +60,12 @@ namespace AgOpenGPS
                                 pn.ConvertWGS84ToLocal(Lat, Lon, out pn.fix.northing, out pn.fix.easting);
 
                                 //From dual antenna heading sentences
-                                float temp = BitConverter.ToSingle(data, 21); 
+                                float temp = BitConverter.ToSingle(data, 21);
                                 if (temp != float.MaxValue)
+                                {
                                     pn.headingTrueDual = temp;
+                                    if (ahrs.isDualAsIMU) ahrs.imuHeading = temp;
+                                }
 
                                 //from single antenna sentences (VTG,RMC)
                                 temp = BitConverter.ToSingle(data, 25);
@@ -88,13 +107,17 @@ namespace AgOpenGPS
                                 if (hdop != ushort.MaxValue)
                                     pn.hdop = hdop * 0.01;
 
+                                ushort age = BitConverter.ToUInt16(data, 46);
+                                if (age != ushort.MaxValue)
+                                    pn.age = age * 0.01;
+
                                 sentenceCounter = 0;
 
                                 if (isLogNMEA)
                                     pn.logNMEASentence.Append(
-                                        DateTime.UtcNow.ToString("HH:mm:ss.ff",CultureInfo.InvariantCulture)+ " " +
+                                        DateTime.UtcNow.ToString("mm:ss.ff",CultureInfo.InvariantCulture)+ " " +
                                         Lat.ToString("N7") + " " + Lon.ToString("N7") + " " + 
-                                        pn.speed.ToString("N1") + " " + Math.Round(ahrs.imuRoll,1).ToString("N1") + " " +
+                                        pn.speed.ToString("N1") + " " +
                                         pn.headingTrueDual.ToString("N1") + "\r\n"
                                         );
 
@@ -105,25 +128,33 @@ namespace AgOpenGPS
 
                     case 0xD3: //external IMU
                         {
-                            if (data.Length != 10)
+                            if (data.Length != 14)
                                 break;
+                            if (ahrs.imuRoll > 25 || ahrs.imuRoll < -25) ahrs.imuRoll = 0;
+                            //Heading
                             ahrs.imuHeading = (Int16)((data[6] << 8) + data[5]);
                             ahrs.imuHeading *= 0.1;
-
+                            
+                            //Roll
                             rollK = (Int16)((data[8] << 8) + data[7]);
 
                             if (ahrs.isRollInvert) rollK *= -0.1;
                             else rollK *= 0.1;
-                            rollK -= ahrs.rollZero;
+                            rollK -= ahrs.rollZero;                           
                             ahrs.imuRoll = ahrs.imuRoll * ahrs.rollFilter + rollK * (1 - ahrs.rollFilter);
 
-                            if (isLogNMEA)
-                                pn.logNMEASentence.Append(
-                                    DateTime.UtcNow.ToString("HH:mm:ss.ff", CultureInfo.InvariantCulture) + " IMU " +
-                                    Math.Round(ahrs.imuRoll, 1).ToString("N1") + " " +
-                                    Math.Round(ahrs.imuHeading, 1).ToString("N1") + 
-                                    "\r\n"
-                                    );
+                            //Angular velocity
+                            ahrs.angVel = (Int16)((data[10] << 8) + data[9]);
+                            ahrs.angVel /= -2;
+
+                            //Log activity
+                            //if (isLogNMEA)
+                            //    pn.logNMEASentence.Append(
+                            //        DateTime.UtcNow.ToString("HH:mm:ss.ff", CultureInfo.InvariantCulture) + " IMU " +
+                            //        Math.Round(ahrs.imuRoll, 1).ToString("N1") + " " +
+                            //        Math.Round(ahrs.imuHeading, 1).ToString("N1") + 
+                            //        "\r\n"
+                            //        );
                             break;
                         }
                     case 0xD4: //imu disconnect pgn
@@ -133,6 +164,8 @@ namespace AgOpenGPS
                                 ahrs.imuHeading = 99999;
 
                                 ahrs.imuRoll = 88888;
+
+                                ahrs.angVel = 0;
                             }
                             break;
                         }
@@ -174,7 +207,7 @@ namespace AgOpenGPS
 
                             if (isLogNMEA)
                                 pn.logNMEASentence.Append(
-                                    DateTime.UtcNow.ToString("HH:mm:ss.ff", CultureInfo.InvariantCulture) + " AS " +
+                                    DateTime.UtcNow.ToString("mm:ss.ff", CultureInfo.InvariantCulture) + " AS " +
                                     //Lat.ToString("N7") + " " + Lon.ToString("N7") + " " +
                                     //pn.speed.ToString("N1") + " " + Math.Round(ahrs.imuRoll, 1).ToString("N1") + " " +
                                     mc.actualSteerAngleDegrees.ToString("N1") + "\r\n"

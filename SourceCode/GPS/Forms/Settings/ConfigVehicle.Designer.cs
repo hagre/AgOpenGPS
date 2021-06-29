@@ -190,6 +190,11 @@ namespace AgOpenGPS
                         mf.p_251.pgn[mf.p_251.set1] = Properties.Vehicle.Default.setArdSteer_setting1;
                         mf.p_251.pgn[mf.p_251.maxPulse] = Properties.Vehicle.Default.setArdSteer_maxPulseCounts;
                         mf.p_251.pgn[mf.p_251.minSpeed] = 5; //0.5 kmh
+
+                        if (Properties.Settings.Default.setAS_isAngVelGuidance)
+                            mf.p_251.pgn[mf.p_251.angVel] = 1;
+                        else mf.p_251.pgn[mf.p_251.angVel] = 0;
+
                         mf.SendPgnToLoop(mf.p_251.pgn);
 
                         mf.TimedMessageBox(2500, "Steer and Machine Settings Sent",  "Was Steer Module Connected?");
@@ -266,7 +271,7 @@ namespace AgOpenGPS
             Properties.Settings.Default.setDisplay_isAutoDayNight = mf.isAutoDayNight;
             Properties.Settings.Default.setDisplay_isStartFullScreen = chkDisplayStartFullScreen.Checked;
             Properties.Settings.Default.setMenu_isSideGuideLines = mf.isSideGuideLines;
-            Properties.Settings.Default.setMenu_isLogNMEA = mf.isLogNMEA;
+            //Properties.Settings.Default.setMenu_isLogNMEA = mf.isLogNMEA;
             Properties.Settings.Default.setMenu_isPureOn = mf.isPureDisplayOn;
             Properties.Settings.Default.setMenu_isLightbarOn = mf.isLightbarOn;
             Properties.Settings.Default.setDisplay_isKeyboardOn = mf.isKeyboardOn;
@@ -454,6 +459,8 @@ namespace AgOpenGPS
             
             nudABLength.Value = (decimal)Math.Round(((double)Properties.Settings.Default.setAB_lineLength * mf.m2FtOrM));
 
+            nudGuidanceLookAhead.Value = (decimal)Properties.Settings.Default.setAS_guidanceLookAheadTime;
+
             double bob = ((double)Properties.Settings.Default.setDisplay_lightbarCmPerPixel * mf.cm2CmOrIn);
             if (bob < 1) bob = 1;
             nudLightbarCmPerPixel.Value = (decimal)bob;
@@ -472,6 +479,8 @@ namespace AgOpenGPS
                 cboxAutoSteerAuto.Text = gStr.gsManual;
             }
 
+            cboxAngVel.Checked = Properties.Settings.Default.setAS_isAngVelGuidance;
+
             label20.Text = mf.unitsInCm;
             label79.Text = mf.unitsFtM;
             label102.Text = mf.unitsInCm;
@@ -479,7 +488,7 @@ namespace AgOpenGPS
 
         private void tabVGuidance_Leave(object sender, EventArgs e)
         {
-            Properties.Settings.Default.setAS_isAutoSteerAutoOn = cboxAutoSteerAuto.Checked;            
+            Properties.Settings.Default.setAS_isAutoSteerAutoOn = cboxAutoSteerAuto.Checked;
             Properties.Settings.Default.Save();
         }
 
@@ -499,6 +508,13 @@ namespace AgOpenGPS
             }
         }
 
+        private void cboxAngVel_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.setAS_isAngVelGuidance = cboxAngVel.Checked;
+            mf.isAngVelGuidance = cboxAngVel.Checked;
+
+        }
+
         private void nudLineWidth_Click(object sender, EventArgs e)
         {
             if (mf.KeypadToNUD((NumericUpDown)sender, this))
@@ -516,6 +532,16 @@ namespace AgOpenGPS
                 mf.ABLine.snapDistance = Properties.Settings.Default.setAS_snapDistance;
             }
         }
+
+        private void nudGuidanceLookAhead_Click(object sender, EventArgs e)
+        {
+            if (mf.KeypadToNUD((NumericUpDown)sender, this))
+            {
+                Properties.Settings.Default.setAS_guidanceLookAheadTime = ((double)nudGuidanceLookAhead.Value);
+                mf.guidanceLookAheadTime = Properties.Settings.Default.setAS_guidanceLookAheadTime;
+            }
+        }
+
 
         private void nudABLength_Click(object sender, EventArgs e)
         {
