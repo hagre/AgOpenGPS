@@ -426,7 +426,11 @@ namespace AgOpenGPS
 
                     if (isRTK)
                     {
-                        if (pn.fixQuality != 4) DrawLostRTK();
+                        if (pn.fixQuality != 4)
+                        {
+                            DrawLostRTK();
+                            if (isRTK_KillAutosteer && isAutoSteerBtnOn) btnAutoSteer.PerformClick();
+                        }
                     }
 
                     if (pn.age > pn.ageAlarm) DrawAge();
@@ -1859,7 +1863,7 @@ namespace AgOpenGPS
             }
         }
 
-        private double avgPivDistance;
+        private double avgPivDistance, lightbarDistance;
         private void DrawLightBarText()
         {
 
@@ -1868,10 +1872,10 @@ namespace AgOpenGPS
             if (ct.isContourBtnOn || ABLine.isBtnABLineOn || curve.isBtnCurveOn)
             {
 
-                if (guidanceLineDistanceOff != 32000 && guidanceLineDistanceOff != 32020)
+                //if (guidanceLineDistanceOff != 32000 && guidanceLineDistanceOff != 32020)
                 {
                     // in millimeters
-                    avgPivDistance = avgPivDistance * 0.5 + guidanceLineDistanceOff * 0.5;
+                    avgPivDistance = avgPivDistance * 0.5 + lightbarDistance * 0.5;
 
                     double avgPivotDistance = avgPivDistance * (isMetric ? 0.1 : 0.03937);
                     string hede;

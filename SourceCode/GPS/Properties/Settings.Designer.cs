@@ -710,7 +710,7 @@ namespace AgOpenGPS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.25")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.06")]
         public double setIMU_fusionWeight {
             get {
                 return ((double)(this["setIMU_fusionWeight"]));
@@ -1057,7 +1057,7 @@ namespace AgOpenGPS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.15")]
         public double setGPS_forwardComp {
             get {
                 return ((double)(this["setGPS_forwardComp"]));
@@ -1069,7 +1069,7 @@ namespace AgOpenGPS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.3")]
         public double setGPS_reverseComp {
             get {
                 return ((double)(this["setGPS_reverseComp"]));
@@ -1088,6 +1088,18 @@ namespace AgOpenGPS.Properties {
             }
             set {
                 this["setGPS_ageAlarm"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool setGPS_isRTK_KillAutoSteer {
+            get {
+                return ((bool)(this["setGPS_isRTK_KillAutoSteer"]));
+            }
+            set {
+                this["setGPS_isRTK_KillAutoSteer"] = value;
             }
         }
     }
