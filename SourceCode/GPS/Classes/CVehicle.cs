@@ -435,11 +435,16 @@ namespace AgOpenGPS
 
             if (mf.camera.camSetDistance > -75 && mf.isFirstHeadingSet)
             {
-                //GL.Color3(1.25f, 1.20f, 0.0f);
                 //draw the bright antenna dot
-                GL.PointSize(8.0f);
+                GL.PointSize(16);
                 GL.Begin(PrimitiveType.Points);
-                GL.Color3(0.20f, 1.25f, 1.25f);
+                GL.Color3(0, 0, 0);
+                GL.Vertex3(0, antennaPivot, 0.1);
+                GL.End();
+
+                GL.PointSize(10);
+                GL.Begin(PrimitiveType.Points);
+                GL.Color3(0.20, 0.98, 0.98);
                 GL.Vertex3(0, antennaPivot, 0.1);
                 GL.End();
             }
@@ -477,17 +482,49 @@ namespace AgOpenGPS
             }
 
             //Svenn Arrow
-            //if (mf.camera.camSetDistance > -350)
+            if (mf.isSvennArrowOn && mf.camera.camSetDistance > -1000)
+            {
+                //double offs = mf.curve.distanceFromCurrentLinePivot * 0.3;
+                double svennDist = mf.camera.camSetDistance * -0.07;
+                double svennWidth = svennDist * 0.22;
+                GL.LineWidth(mf.ABLine.lineWidth);
+                GL.Color3(1.2, 1.25, 0.10);
+                GL.Begin(PrimitiveType.LineStrip);
+                {
+                    GL.Vertex3(svennWidth, wheelbase + svennDist, 0.0);
+                    GL.Vertex3(0, wheelbase + svennWidth + 0.5 + svennDist, 0.0);
+                    GL.Vertex3(-svennWidth, wheelbase + svennDist, 0.0);
+                }
+                GL.End();
+            }
+
+            //Svenn Arrow
+            //if (mf.isSvennArrowOn && mf.camera.camSetDistance > -1000)
             //{
-            //    GL.LineWidth(1);
+            //    double modelSteerAngle;
+
+            //    //if (mf.timerSim.Enabled)
+            //    //    modelSteerAngle = 0.5 * mf.sim.steerAngle;
+            //    //else
+            //    modelSteerAngle = 0;//.25 * mf.mc.actualSteerAngleDegrees;
+
+            //    GL.PushMatrix();
+            //    GL.Translate(0, wheelbase * 0.5, 0);
+            //    GL.Rotate(-modelSteerAngle, 0, 0, 1);
+            //    double offs = mf.curve.distanceFromCurrentLinePivot;
+            //    //offs = 0;
+            //    double svennDist = mf.camera.camSetDistance * -0.07;
+            //    double svennWidth = svennDist * 0.22;
+            //    GL.LineWidth(2);
             //    GL.Color3(1.2, 1.25, 0.10);
             //    GL.Begin(PrimitiveType.LineStrip);
             //    {
-            //        GL.Vertex3(0.4, wheelbase + 5, 0.0);
-            //        GL.Vertex3(0, wheelbase + 6, 0.0);
-            //        GL.Vertex3(-0.4, wheelbase + 5, 0.0);
+            //        GL.Vertex3(offs + svennWidth, wheelbase + svennDist, 0.0);
+            //        GL.Vertex3(offs + 0, wheelbase + svennWidth + 0.5 + svennDist, 0.0);
+            //        GL.Vertex3(offs + -svennWidth, wheelbase + svennDist, 0.0);
             //    }
             //    GL.End();
+            //    GL.PopMatrix();
             //}
 
             if (mf.curve.isBtnCurveOn && !mf.ct.isContourBtnOn)

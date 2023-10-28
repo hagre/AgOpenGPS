@@ -25,7 +25,7 @@ namespace AgOpenGPS
         public byte flagColor = 0;
 
         //how many cm off line per big pixel
-        public int lightbarCmPerPixel;
+        public int lightbarCmPerPixel =2;
 
         //polygon mode for section drawing
         public bool isDrawPolygons = false;
@@ -51,7 +51,7 @@ namespace AgOpenGPS
         public bool isUTurnAlwaysOn, isCompassOn, isSpeedoOn, isAutoDayNight, isSideGuideLines = true;
         public bool isPureDisplayOn = true, isSkyOn = true, isRollMeterOn = false, isTextureOn = true;
         public bool isDay = true, isDayTime = true, isBrightnessOn = true;
-        public bool isKeyboardOn = true, isAutoStartAgIO = true;
+        public bool isKeyboardOn = true, isAutoStartAgIO = true, isSvennArrowOn = true;
 
         public bool isUTurnOn = true, isLateralOn = true;
 
@@ -294,9 +294,6 @@ namespace AgOpenGPS
                     //btnContour.Text = InchXTE; //cross track error
                 }
 
-                lblAV_Act.Text = actAngVel.ToString("N1");
-                lblAV_Set.Text = setAngVel.ToString("N1");
-
             } //end every 1/2 second
 
             //every fifth second update  ///////////////////////////   FIFTH Fifth ////////////////////////////
@@ -332,7 +329,6 @@ namespace AgOpenGPS
             headlandToolStripMenuItem.Visible = Properties.Settings.Default.setFeatures.isHeadlandOn;
 
             boundariesToolStripMenuItem.Visible = Properties.Settings.Default.setFeatures.isBoundaryOn;
-            toolStripBtnMakeBndContour.Visible = Properties.Settings.Default.setFeatures.isBndContourOn;
             recordedPathStripMenu.Visible = Properties.Settings.Default.setFeatures.isRecPathOn;
             SmoothABtoolStripMenu.Visible = Properties.Settings.Default.setFeatures.isABSmoothOn;
             deleteContourPathsToolStripMenuItem.Visible = Properties.Settings.Default.setFeatures.isHideContourOn;
@@ -348,6 +344,7 @@ namespace AgOpenGPS
             btnSectionMasterAuto.Visible = Properties.Settings.Default.setFeatures.isAutoSectionOn;
             btnABLine.Visible = Properties.Settings.Default.setFeatures.isABLineOn;
             btnCurve.Visible = Properties.Settings.Default.setFeatures.isCurveOn;
+            btnStanleyPure.Visible = Properties.Settings.Default.setFeatures.isSteerModeOn;
 
             isUTurnOn = Properties.Settings.Default.setFeatures.isUTurnOn;
             isLateralOn = Properties.Settings.Default.setFeatures.isLateralOn;
@@ -409,6 +406,8 @@ namespace AgOpenGPS
             isSpeedoOn = Settings.Default.setMenu_isSpeedoOn;
             isAutoDayNight = Settings.Default.setDisplay_isAutoDayNight;
             isSideGuideLines = Settings.Default.setMenu_isSideGuideLines;
+            isSvennArrowOn = Settings.Default.setDisplay_isSvennArrowOn;
+
             //isLogNMEA = Settings.Default.setMenu_isLogNMEA;
             isPureDisplayOn = Settings.Default.setMenu_isPureOn;
 
@@ -439,6 +438,15 @@ namespace AgOpenGPS
             }
 
             if (timerSim.Enabled) gpsHz = 10;
+
+            if ( Properties.Settings.Default.setVehicle_isStanleyUsed)
+            {
+                btnStanleyPure.Image = Resources.ModeStanley;
+            }
+            else
+            {
+                btnStanleyPure.Image = Resources.ModePurePursuit;
+            }
 
             //set the flag mark button to red dot
             btnFlag.Image = Properties.Resources.FlagRed;
@@ -585,7 +593,7 @@ namespace AgOpenGPS
             tool.contourWidth = (tool.width - tool.overlap) / 3.0;
 
             //load the lightbar resolution
-            lightbarCmPerPixel = Properties.Settings.Default.setDisplay_lightbarCmPerPixel;
+            lightbarCmPerPixel = 2;
 
             isStanleyUsed = Properties.Settings.Default.setVehicle_isStanleyUsed;
 
@@ -708,9 +716,6 @@ namespace AgOpenGPS
             {
                 LineUpAllZoneButtons();
             }
-
-            btnAutoSteerConfig.ForeColor = Color.Black;
-            btnEditAB.ForeColor = Color.Black;
 
             Properties.Settings.Default.setDisplay_isDayMode = isDay;
             Properties.Settings.Default.Save();

@@ -1898,7 +1898,7 @@ namespace AgOpenGPS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.64")]
         public double setVehicle_maxAngularVelocity {
             get {
                 return ((double)(this["setVehicle_maxAngularVelocity"]));
@@ -2606,18 +2606,6 @@ namespace AgOpenGPS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.4")]
-        public double setAS_maxAngularVelocity {
-            get {
-                return ((double)(this["setAS_maxAngularVelocity"]));
-            }
-            set {
-                this["setAS_maxAngularVelocity"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15")]
         public double setAS_maxSteerSpeed {
             get {
@@ -2673,6 +2661,18 @@ namespace AgOpenGPS.Properties {
             }
             set {
                 this["setIMU_fusionWeight2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool setDisplay_isSvennArrowOn {
+            get {
+                return ((bool)(this["setDisplay_isSvennArrowOn"]));
+            }
+            set {
+                this["setDisplay_isSvennArrowOn"] = value;
             }
         }
     }

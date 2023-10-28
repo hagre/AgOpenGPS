@@ -471,7 +471,7 @@
       <Value Profile="(Default)">3</Value>
     </Setting>
     <Setting Name="setVehicle_maxAngularVelocity" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0.4</Value>
+      <Value Profile="(Default)">0.64</Value>
     </Setting>
     <Setting Name="setVehicle_maxSteerAngle" Type="System.Double" Scope="User">
       <Value Profile="(Default)">30</Value>
@@ -647,9 +647,6 @@
     <Setting Name="setAS_functionSpeedLimit" Type="System.Double" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
-    <Setting Name="setAS_maxAngularVelocity" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0.4</Value>
-    </Setting>
     <Setting Name="setAS_maxSteerSpeed" Type="System.Double" Scope="User">
       <Value Profile="(Default)">15</Value>
     </Setting>
@@ -664,6 +661,9 @@
     </Setting>
     <Setting Name="setIMU_fusionWeight2" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0.06</Value>
+    </Setting>
+    <Setting Name="setDisplay_isSvennArrowOn" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

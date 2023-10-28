@@ -147,6 +147,7 @@ namespace AgOpenGPS
                 chkDisplaySpeedo.Checked = mf.isSpeedoOn;
                 chkDisplayDayNight.Checked = mf.isAutoDayNight;
                 chkDisplayExtraGuides.Checked = mf.isSideGuideLines;
+                chkSvennArrow.Checked = mf.isSvennArrowOn;
                 chkDisplayLogNMEA.Checked = mf.isLogNMEA;
                 chkDisplayPolygons.Checked = mf.isDrawPolygons;
                 chkDisplayLightbar.Checked = mf.isLightbarOn;
@@ -319,6 +320,7 @@ namespace AgOpenGPS
                         chkDisplayGrid.Checked = mf.isGridOn;
                         chkDisplaySpeedo.Checked = mf.isSpeedoOn;
                         chkDisplayDayNight.Checked = mf.isAutoDayNight;
+                        chkSvennArrow.Checked = mf.isSvennArrowOn;
                         chkDisplayExtraGuides.Checked = mf.isSideGuideLines;
                         chkDisplayLogNMEA.Checked = mf.isLogNMEA;
                         chkDisplayPolygons.Checked = mf.isDrawPolygons;
@@ -514,6 +516,8 @@ namespace AgOpenGPS
             mf.isLightbarOn = chkDisplayLightbar.Checked;
             mf.isKeyboardOn = chkDisplayKeyboard.Checked;
             mf.isBrightnessOn = chkDisplayBrightness.Checked;
+            mf.isSvennArrowOn = chkSvennArrow.Checked;
+
             //mf.timeToShowMenus = (int)nudMenusOnTime.Value;
 
             Properties.Settings.Default.setMenu_isSkyOn = mf.isSkyOn;
@@ -521,6 +525,7 @@ namespace AgOpenGPS
             Properties.Settings.Default.setDisplay_isTextureOn = mf.isTextureOn;
             Properties.Settings.Default.setMenu_isGridOn = mf.isGridOn;
             Properties.Settings.Default.setMenu_isCompassOn = mf.isCompassOn;
+            Properties.Settings.Default.setDisplay_isSvennArrowOn = mf.isSvennArrowOn;
             Properties.Settings.Default.setMenu_isSpeedoOn = mf.isSpeedoOn;
             Properties.Settings.Default.setDisplay_isAutoDayNight = mf.isAutoDayNight;
             Properties.Settings.Default.setDisplay_isStartFullScreen = chkDisplayStartFullScreen.Checked;
@@ -665,13 +670,9 @@ namespace AgOpenGPS
             nudGuidanceLookAhead.Value = (decimal)Properties.Settings.Default.setAS_guidanceLookAheadTime;
 
             nudGuidanceSpeedLimit.Value = (decimal)Properties.Settings.Default.setAS_functionSpeedLimit;
-            nudMaxAngularVelocity.Value = (decimal)glm.toDegrees(Properties.Settings.Default.setAS_maxAngularVelocity);
+            nudMaxAngularVelocity.Value = (decimal)glm.toDegrees(Properties.Settings.Default.setVehicle_maxAngularVelocity);
             nudMaxSteerSpeed.Value = (decimal)(Properties.Settings.Default.setAS_maxSteerSpeed);
             nudMinSteerSpeed.Value = (decimal)(Properties.Settings.Default.setAS_minSteerSpeed);
-
-            double bob = ((double)Properties.Settings.Default.setDisplay_lightbarCmPerPixel * mf.cm2CmOrIn);
-            if (bob < 1) bob = 1;
-            nudLightbarCmPerPixel.Value = (decimal)bob;
 
             nudLineWidth.Value = Properties.Settings.Default.setDisplay_lineWidth;
 
@@ -692,7 +693,6 @@ namespace AgOpenGPS
 
             label20.Text = mf.unitsInCm;
             label79.Text = mf.unitsFtM;
-            label102.Text = mf.unitsInCm;
         }
 
         private void tabVGuidance_Leave(object sender, EventArgs e)
@@ -778,8 +778,8 @@ namespace AgOpenGPS
         {
             if (mf.KeypadToNUD((NumericUpDown)sender, this))
             {
-                Properties.Settings.Default.setAS_maxAngularVelocity = glm.toRadians(((double)nudMaxAngularVelocity.Value));
-                mf.vehicle.maxAngularVelocity = Properties.Settings.Default.setAS_maxAngularVelocity;
+                Properties.Settings.Default.setVehicle_maxAngularVelocity = glm.toRadians(((double)nudMaxAngularVelocity.Value));
+                mf.vehicle.maxAngularVelocity = Properties.Settings.Default.setVehicle_maxAngularVelocity;
             }
         }
 
@@ -801,15 +801,6 @@ namespace AgOpenGPS
             }
         }
 
-        private void nudLightbarCmPerPixel_Click(object sender, EventArgs e)
-        {
-            if (mf.KeypadToNUD((NumericUpDown)sender, this))
-            {
-                Properties.Settings.Default.setDisplay_lightbarCmPerPixel = (int)((double)nudLightbarCmPerPixel.Value * mf.inOrCm2Cm);
-                mf.lightbarCmPerPixel = Properties.Settings.Default.setDisplay_lightbarCmPerPixel;
-
-            }
-        }
         #endregion
 
         #region VConfig Enter/Leave

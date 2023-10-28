@@ -366,8 +366,44 @@ namespace AgOpenGPS
                     catch { }
 
                     //draw the vehicle/implement
-                    tool.DrawTool();
-                    vehicle.DrawVehicle();
+                    GL.PushMatrix();
+                    {
+                        tool.DrawTool();
+                        vehicle.DrawVehicle();
+                    }
+                    GL.PopMatrix();
+
+                    if (camera.camSetDistance > -150)
+                    {
+                        if (ABLine.isBtnABLineOn)
+                        {
+                            GL.PointSize(16);
+                            GL.Begin(PrimitiveType.Points);
+                            GL.Color3(0, 0, 0);
+                            GL.Vertex3(ABLine.goalPointAB.easting, ABLine.goalPointAB.northing, 0.0);
+                            GL.End();
+
+                            GL.PointSize(10);
+                            GL.Begin(PrimitiveType.Points);
+                            GL.Color3(0.98, 0.98, 0.098);
+                            GL.Vertex3(ABLine.goalPointAB.easting, ABLine.goalPointAB.northing, 0.0);
+                            GL.End();
+                        }
+                        else if (curve.isBtnCurveOn)
+                        {
+                            GL.PointSize(16);
+                            GL.Begin(PrimitiveType.Points);
+                            GL.Color3(0, 0, 0);
+                            GL.Vertex3(curve.goalPointCu.easting, curve.goalPointCu.northing, 0.0);
+                            GL.End();
+
+                            GL.PointSize(10);
+                            GL.Begin(PrimitiveType.Points);
+                            GL.Color3(0.98, 0.98, 0.098);
+                            GL.Vertex3(curve.goalPointCu.easting, curve.goalPointCu.northing, 0.0);
+                            GL.End();
+                        }
+                    }
 
                     // 2D Ortho ---------------------------------------////////-------------------------------------------------
 
@@ -2052,7 +2088,7 @@ namespace AgOpenGPS
             if (isMaxAngularVelocity)
             {
                 GL.Color3(0.98f, 0.4f, 0.4f);
-                font.DrawText(center-10, oglMain.Height-60, "&", 2);
+                font.DrawText(center-10, oglMain.Height-260, "*AV*", 4);
             }
 
             //if (ahrs.imuHeading != 99999)
