@@ -234,6 +234,11 @@ namespace AgOpenGPS
         /// </summary>
         public CFont font;
 
+        public ShapeFile shape;
+        /// <summary>
+        /// The new brightness code
+        /// </summary>
+
         private void panelRight_Paint(object sender, PaintEventArgs e)
         {
 
@@ -250,7 +255,6 @@ namespace AgOpenGPS
         public CWindowsSettingsBrightnessController displayBrightness;
 
         #endregion // Class Props and instances
-
 
         public FormGPS()
         {
@@ -340,6 +344,9 @@ namespace AgOpenGPS
 
             //brightness object class
             displayBrightness = new CWindowsSettingsBrightnessController(Properties.Settings.Default.setDisplay_isBrightnessOn);
+
+            //shape file object
+            shape = new ShapeFile(this);
         }
 
         private void FormGPS_Load(object sender, EventArgs e)
@@ -501,8 +508,8 @@ namespace AgOpenGPS
             headlandToolStripMenuItem.Text = gStr.gsHeadland;
             headlandBuildToolStripMenuItem.Text = gStr.gsHeadland + " (Lines)";
             deleteContourPathsToolStripMenuItem.Text = gStr.gsDeleteContourPaths;
-            deleteAppliedAreaToolStripMenuItem.Text = gStr.gsDeleteAppliedArea;
-            deleteForSureToolStripMenuItem.Text = gStr.gsAreYouSure;
+            deleteAppliedToolStripMenuItem.Text = gStr.gsDeleteAppliedArea;
+            toolStripAreYouSure.Text = gStr.gsAreYouSure;
             tramLinesMenuField.Text = gStr.gsTramLines;
             recordedPathStripMenu.Text = gStr.gsRecordedPathMenu;
 
@@ -646,7 +653,7 @@ namespace AgOpenGPS
             }
         }
 
-        private void FormGPS_Resize(object sender, EventArgs e)
+        private void FormGPS_ResizeEnd(object sender, EventArgs e)
         {
             PanelsAndOGLSize();
             if (isGPSPositionInitialized) SetZoom();
@@ -704,6 +711,7 @@ namespace AgOpenGPS
                 Settings.Default.setFeatures = new CFeatureSettings();
             }
         }
+
         public enum textures : uint
         {
             SkyDay, Floor, Font,
@@ -940,6 +948,7 @@ namespace AgOpenGPS
 
             //clean all the lines
             bnd.bndList.Clear();
+            bnd.shpList.Clear();
 
             panelRight.Enabled = false;
             FieldMenuButtonEnableDisable(false);
@@ -1118,7 +1127,7 @@ namespace AgOpenGPS
         {
             SmoothABtoolStripMenu.Enabled = isOn;
             deleteContourPathsToolStripMenuItem.Enabled = isOn;
-            deleteAppliedAreaToolStripMenuItem.Enabled = isOn;
+            boundaryToolToolStripMenu.Enabled = isOn;
             offsetFixToolStrip.Enabled = isOn;
 
             boundariesToolStripMenuItem.Enabled = isOn;

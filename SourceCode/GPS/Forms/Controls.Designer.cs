@@ -158,6 +158,7 @@ namespace AgOpenGPS
                 btnAutoSteer.Image = Properties.Resources.AutoSteerOff;
                 //if (yt.isYouTurnBtnOn) btnAutoYouTurn.PerformClick();
                 if (sounds.isSteerSoundOn) sounds.sndAutoSteerOff.Play();
+                trk.isAutoSnapped = false;
             }
             else
             {
@@ -166,7 +167,11 @@ namespace AgOpenGPS
                     isBtnAutoSteerOn = true;
                     btnAutoSteer.Image = Properties.Resources.AutoSteerOn;
                     if (sounds.isSteerSoundOn) sounds.sndAutoSteerOn.Play();
-                    if (isAutoSnapToPivot) trk.SnapToPivot();
+                    if (trk.isAutoSnapToPivot)
+                    {
+                        trk.SnapToPivot();
+                        trk.isAutoSnapped = true;   
+                    }
                 }
                 else
                 {
@@ -448,19 +453,9 @@ namespace AgOpenGPS
             if (isBtnAutoSteerOn) btnAutoSteer.PerformClick();
             if (yt.isYouTurnBtnOn) btnAutoYouTurn.PerformClick();
 
-            if (this.Height > 1000 && this.Width > 1000)
+            using (var form = new FormABDraw(this))
             {
-                using (var form = new FormABDraw2(this))
-                {
-                    form.ShowDialog(this);
-                }
-            }
-            else
-            {
-                using (var form = new FormABDraw(this))
-                {
-                    form.ShowDialog(this);
-                }
+                form.ShowDialog(this);
             }
 
             PanelUpdateRightAndBottom();
@@ -1222,6 +1217,8 @@ namespace AgOpenGPS
             if (this.WindowState == FormWindowState.Maximized)
                 this.WindowState = FormWindowState.Normal;
             else this.WindowState = FormWindowState.Maximized;
+
+            FormGPS_ResizeEnd(this, e);
         }
         private void lblCurrentField_Click(object sender, EventArgs e)
         {
