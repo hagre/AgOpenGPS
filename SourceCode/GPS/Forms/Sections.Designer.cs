@@ -959,7 +959,7 @@ namespace AgOpenGPS
                             for (int i = 0; i < 8; i++)
                             {
                                 Bit = (int)Math.Pow(2, i);
-                                if (section[i].sectionBtnState != btnStates.On && (mc.ss[mc.swOnGr0] & Bit) == Bit && tool.numOfSections > i)
+                                if (section[i].sectionBtnState != btnStates.On && (mc.ss[mc.swOnGr0] & Bit) == Bit && tool.numOfSections > i && mc.ss[mc.swNumSections] > i)
                                 {
                                     section[i].sectionBtnState = btnStates.Auto;
                                     PerformSectionBtnClick(i);
@@ -972,7 +972,7 @@ namespace AgOpenGPS
                             for (int i = 0; i < 8; i++)
                             {
                                 Bit = (int)Math.Pow(2, i);
-                                if (section[i + 8].sectionBtnState != btnStates.On && (mc.ss[mc.swOnGr1] & Bit) == Bit && tool.numOfSections > i + 8)
+                                if (section[i + 8].sectionBtnState != btnStates.On && (mc.ss[mc.swOnGr1] & Bit) == Bit && tool.numOfSections > i + 8 && mc.ss[mc.swNumSections] > i)
                                 {
                                     section[i + 8].sectionBtnState = btnStates.Auto;
                                     PerformSectionBtnClick(i + 8);
@@ -986,7 +986,7 @@ namespace AgOpenGPS
                             for (int i = 0; i < 8; i++)
                             {
                                 Bit = (int)Math.Pow(2, i);
-                                if (section[i].sectionBtnState != btnStates.Auto && (mc.ss[mc.swAutoGr0] & Bit) == Bit && tool.numOfSections > i)
+                                if (section[i].sectionBtnState != btnStates.Auto && (mc.ss[mc.swAutoGr0] & Bit) == Bit && tool.numOfSections > i && mc.ss[mc.swNumSections] > i)
                                 {
                                     section[i].sectionBtnState = btnStates.Off;
                                     PerformSectionBtnClick(i);
@@ -999,7 +999,7 @@ namespace AgOpenGPS
                             for (int i = 0; i < 8; i++)
                             {
                                 Bit = (int)Math.Pow(2, i);
-                                if (section[i + 8].sectionBtnState != btnStates.Auto && (mc.ss[mc.swAutoGr1] & Bit) == Bit && tool.numOfSections > i + 8)
+                                if (section[i + 8].sectionBtnState != btnStates.Auto && (mc.ss[mc.swAutoGr1] & Bit) == Bit && tool.numOfSections > i + 8 && mc.ss[mc.swNumSections] > i)
                                 {
                                     section[i + 8].sectionBtnState = btnStates.Off;
                                     PerformSectionBtnClick(i + 8);
