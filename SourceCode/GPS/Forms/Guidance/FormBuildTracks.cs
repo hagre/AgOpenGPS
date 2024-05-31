@@ -144,6 +144,7 @@ namespace AgOpenGPS
             mf.trk.idx = originalLine;
 
             mf.curve.isCurveValid = false;
+            mf.curve.lastHowManyPathsAway = 98888;
             mf.ABLine.isABValid = false;
 
             mf.twoSecondCounter = 100;
@@ -156,6 +157,7 @@ namespace AgOpenGPS
             isClosing = true;
             //reset to generate new reference
             mf.curve.isCurveValid = false;
+            mf.curve.lastHowManyPathsAway = 98888;
             mf.ABLine.isABValid = false;
             mf.curve.desList?.Clear();
 
@@ -782,7 +784,7 @@ namespace AgOpenGPS
             mf.trk.gArr[idx].heading = mf.ABLine.desHeading;
 
             mf.ABLine.desName = "AB " +
-                (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 1)).ToString(CultureInfo.InvariantCulture) + "\u00B0 " ;
+                (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 5)).ToString(CultureInfo.InvariantCulture) + "\u00B0 " ;
             textBox1.Text = mf.ABLine.desName;
 
             double dist;
@@ -874,7 +876,7 @@ namespace AgOpenGPS
             mf.trk.gArr[idx].heading = mf.ABLine.desHeading;
 
             mf.ABLine.desName = "A+" +
-                (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 1)).ToString(CultureInfo.InvariantCulture) + "\u00B0 " ;
+                (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 5)).ToString(CultureInfo.InvariantCulture) + "\u00B0 " ;
             textBox1.Text = mf.ABLine.desName;
 
             double dist;
@@ -992,7 +994,7 @@ namespace AgOpenGPS
                             mf.ABLine.desName = trackName;
                         }
                         else mf.ABLine.desName = "AB " +
-                            (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 1)).ToString(CultureInfo.InvariantCulture) + "\u00B0 ";
+                            (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 5)).ToString(CultureInfo.InvariantCulture) + "\u00B0 ";
 
                         mf.trk.gArr.Add(new CTrk());
 
@@ -1128,7 +1130,7 @@ namespace AgOpenGPS
             mf.trk.gArr[idx].heading = mf.ABLine.desHeading;
 
             mf.ABLine.desName = "AB " +
-                (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 1)).ToString(CultureInfo.InvariantCulture) + "\u00B0 ";
+                (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 5)).ToString(CultureInfo.InvariantCulture) + "\u00B0 ";
             textBox1.Text = mf.ABLine.desName;
 
             panelLatLonLatLon.Visible = false;
@@ -1206,7 +1208,7 @@ namespace AgOpenGPS
             mf.trk.gArr[idx].heading = mf.ABLine.desHeading;
 
             mf.ABLine.desName = "A+ " +
-                (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 1)).ToString(CultureInfo.InvariantCulture) + "\u00B0 ";
+                (Math.Round(glm.toDegrees(mf.ABLine.desHeading), 5)).ToString(CultureInfo.InvariantCulture) + "\u00B0 ";
             textBox1.Text = mf.ABLine.desName;
 
             panelLatLonPlus.Visible = false;
@@ -1338,7 +1340,7 @@ namespace AgOpenGPS
 
             mf.trk.gArr[idx].name = textBox2.Text.Trim();
 
-            this.Size = new System.Drawing.Size(700, 450);
+            this.Size = new System.Drawing.Size(650, 480);
 
             UpdateTable();
             flp.Focus();
