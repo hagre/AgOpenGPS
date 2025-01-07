@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AgLibrary.Logging;
 using AgOpenGPS.Culture;
 using AgOpenGPS.Properties;
 using Microsoft.Win32;
@@ -41,8 +42,6 @@ namespace AgOpenGPS
                         if (!success) return;
 
                         RegistrySettings.vehicleFileName = lvVehicles.SelectedItems[0].SubItems[0].Text;
-                        Properties.Settings.Default.setVehicle_vehicleName = RegistrySettings.vehicleFileName;
-                        Properties.Settings.Default.Save();
 
                         RegistrySettings.Save();
 
@@ -108,7 +107,6 @@ namespace AgOpenGPS
                         mf.TimedMessageBox(2500, "Steer and Machine Settings Sent", "Were Modules Connected?");
 
                         Log.EventWriter("Vehicle Loaded: " + RegistrySettings.vehicleFileName + ".XML");
-
                     }
 
                     UpdateVehicleListView();
@@ -121,6 +119,8 @@ namespace AgOpenGPS
             }
 
             UpdateSummary();
+
+            btnOK.PerformClick();
         }
         private void btnVehicleDelete_Click(object sender, EventArgs e)
         {
@@ -176,13 +176,7 @@ namespace AgOpenGPS
 
             if (tboxVehicleNameSave.Text.Trim().Length > 0)
             {
-                Properties.Settings.Default.Save();
-                RegistrySettings.Save();
-
-                RegistrySettings.vehicleFileName = tboxVehicleNameSave.Text.Trim();
-                Properties.Settings.Default.setVehicle_vehicleName = RegistrySettings.vehicleFileName;
-                Properties.Settings.Default.Save();
-               
+                RegistrySettings.vehicleFileName = tboxVehicleNameSave.Text.Trim();               
                 RegistrySettings.Save();
 
                 tboxVehicleNameSave.Text = "";
@@ -306,11 +300,7 @@ namespace AgOpenGPS
                 Settings.Default.Reset();
                 Settings.Default.Save();
 
-                Properties.Settings.Default.setVehicle_vehicleName = tboxCreateNewVehicle.Text.Trim();
-
-                Properties.Settings.Default.Save();
-
-                lblCurrentVehicle.Text = RegistrySettings.vehicleFileName = Properties.Settings.Default.setVehicle_vehicleName;
+                lblCurrentVehicle.Text = RegistrySettings.vehicleFileName = tboxCreateNewVehicle.Text.Trim();
                 tboxCreateNewVehicle.Text = "";
 
                 LoadBrandImage();
@@ -403,7 +393,7 @@ namespace AgOpenGPS
 
             //deselect everything
             lvVehicles.SelectedItems.Clear();
-            lblSummaryVehicleName.Text = Properties.Settings.Default.setVehicle_vehicleName;
+            lblSummaryVehicleName.Text = RegistrySettings.vehicleFileName;
 
             //tboxCreateNewVehicle.Text = "";
             //tboxVehicleNameSave.Text = "";

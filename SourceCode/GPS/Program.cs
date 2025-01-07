@@ -1,4 +1,5 @@
-﻿using AgOpenGPS.Properties;
+﻿using AgLibrary.Logging;
+using AgOpenGPS.Properties;
 using Microsoft.Win32;
 using System;
 using System.Configuration;
@@ -23,11 +24,6 @@ namespace AgOpenGPS
             Settings.Default.Save();
             
             RegistrySettings.Load();
-
-            Properties.Settings.Default.setF_culture = RegistrySettings.culture;
-            Properties.Settings.Default.setF_workingDirectory = RegistrySettings.workingDirectory;
-            Properties.Settings.Default.setVehicle_vehicleName = RegistrySettings.vehicleFileName;
-            Properties.Settings.Default.Save();
 
             if (Mutex.WaitOne(TimeSpan.Zero, true))
             {

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using AgOpenGPS.Culture;
 using System.Text;
 using AgOpenGPS.Helpers;
+using AgLibrary.Logging;
 
 namespace AgOpenGPS
 {
@@ -381,6 +382,45 @@ namespace AgOpenGPS
         {            
             CheckSettingsNotNull();
 
+            enterSimCoordsToolStripMenuItem.Text = gStr.gsEnterSimCoords;
+            aboutToolStripMenuItem.Text = gStr.gsAbout;
+            menustripLanguage.Text = gStr.gsLanguage;
+
+            simulatorOnToolStripMenuItem.Text = gStr.gsSimulatorOn;
+            resetALLToolStripMenuItem.Text = gStr.gsResetAll;
+
+            toolStripColors.Text = gStr.gsColors;
+            toolStripSectionColors.Text = "Section " + gStr.gsColors;
+            toolStripConfig.Text = gStr.gsConfiguration;
+            toolStripSteerSettings.Text = gStr.gsAutoSteer;
+            toolStripWorkingDirectories.Text = gStr.gsDirectories;
+
+            resetEverythingToolStripMenuItem.Text = gStr.gsResetAllForSure;
+            steerChartStripMenu.Text = gStr.gsCharts;
+
+            //Tools Menu
+            SmoothABtoolStripMenu.Text = gStr.gsSmoothABCurve;
+            boundariesToolStripMenuItem.Text = gStr.gsBoundary;
+            headlandToolStripMenuItem.Text = gStr.gsHeadland;
+            headlandBuildToolStripMenuItem.Text = gStr.gsHeadland + " Builder";
+            deleteContourPathsToolStripMenuItem.Text = gStr.gsDeleteContourPaths;
+            deleteAppliedToolStripMenuItem.Text = gStr.gsDeleteAppliedArea;
+            tramLinesMenuField.Text = gStr.gsTramLines;
+            recordedPathStripMenu.Text = gStr.gsRecordedPathMenu;
+            flagByLatLonToolStripMenuItem.Text = gStr.gsFlagByLatLon;
+            boundaryToolToolStripMenu.Text = gStr.gsBoundary + " Tool";
+
+            webcamToolStrip.Text = gStr.gsWebCam;
+            offsetFixToolStrip.Text = gStr.gsOffsetFix;
+            wizardsMenu.Text = gStr.gsWizards;
+            steerWizardMenuItem.Text = gStr.gsSteerWizard;
+            steerChartToolStripMenuItem.Text = gStr.gsSteerChart;
+            headingChartToolStripMenuItem.Text = gStr.gsHeadingChart;
+            xTEChartToolStripMenuItem.Text = gStr.gsXTEChart;
+
+            btnChangeMappingColor.Text = GitVersionInformation.MajorMinorPatch;
+            //btnChangeMappingColor.Text = btnChangeMappingColor.Text.Substring(2);
+
             //metric settings
             isMetric = Settings.Default.setMenu_isMetric;
 
@@ -516,9 +556,6 @@ namespace AgOpenGPS
             isVehicleImage = Properties.Settings.Default.setDisplay_isVehicleImage;
 
             string directoryName = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-
-            //grab the current vehicle filename - make sure it exists
-            RegistrySettings.vehicleFileName = Settings.Default.setVehicle_vehicleName;
 
             simulatorOnToolStripMenuItem.Checked = Settings.Default.setMenu_isSimulatorOn;
             if (simulatorOnToolStripMenuItem.Checked)

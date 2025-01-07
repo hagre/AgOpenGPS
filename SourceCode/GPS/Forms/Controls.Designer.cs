@@ -8,7 +8,9 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
+using AgLibrary.Logging;
 using AgOpenGPS.Culture;
 using AgOpenGPS.Forms;
 using AgOpenGPS.Forms.Pickers;
@@ -1289,26 +1291,30 @@ namespace AgOpenGPS
 
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             fbd.ShowNewFolderButton = true;
-            fbd.Description = "Currently: " + Settings.Default.setF_workingDirectory;
+            fbd.Description = "Currently: " + RegistrySettings.workingDirectory;
 
-            if (Settings.Default.setF_workingDirectory == "Default") fbd.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            else fbd.SelectedPath = Settings.Default.setF_workingDirectory;
+            if (RegistrySettings.workingDirectory == "Default") fbd.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            else fbd.SelectedPath = RegistrySettings.workingDirectory;
 
             if (fbd.ShowDialog(this) == DialogResult.OK)
             {
                 if (fbd.SelectedPath != Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
                 {
-                    Settings.Default.setF_workingDirectory = fbd.SelectedPath;
-                    RegistrySettings.workingDirectory = Settings.Default.setF_workingDirectory;
+                    RegistrySettings.workingDirectory = fbd.SelectedPath;
                     RegistrySettings.baseDirectory = Path.Combine(RegistrySettings.workingDirectory, "AgOpenGPS");
                     RegistrySettings.fieldsDirectory = Path.Combine(RegistrySettings.workingDirectory, "AgOpenGPS", "Fields");
                     RegistrySettings.CreateDirectories();
+                    RegistrySettings.vehicleFileName = "Default Vehicle";
                 }
                 else
                 {
-                    Settings.Default.setF_workingDirectory = "Default";
                     RegistrySettings.workingDirectory = "Default";
+                    RegistrySettings.vehicleFileName = "Default Vehicle";
+                    RegistrySettings.CreateDirectories();
                 }
+
+                //reset to default Vehicle and save
+                Settings.Default.Reset();
                 Settings.Default.Save();
 
                 RegistrySettings.Save();
@@ -1339,7 +1345,6 @@ namespace AgOpenGPS
                 form.ShowDialog(this);
             }
         }
-
         private void kioskModeToolStrip_Click(object sender, EventArgs e)
         {
             isKioskMode = !isKioskMode;
@@ -1363,7 +1368,6 @@ namespace AgOpenGPS
 
             Settings.Default.Save();
         }
-
         private void resetALLToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (isJobStarted)
@@ -1482,90 +1486,83 @@ namespace AgOpenGPS
         //Languages
         private void menuLanguageEnglish_Click(object sender, EventArgs e)
         {
-            SetLanguage("en", true);
+            SetLanguage("en");
         }
         private void menuLanguageDanish_Click(object sender, EventArgs e)
         {
-            SetLanguage("da", true);
+            SetLanguage("da");
         }
         private void menuLanguageDeutsch_Click(object sender, EventArgs e)
         {
-            SetLanguage("de", true);
+            SetLanguage("de");
         }
         private void menuLanguageRussian_Click(object sender, EventArgs e)
         {
-            SetLanguage("ru", true);
+            SetLanguage("ru");
         }
         private void menuLanguageDutch_Click(object sender, EventArgs e)
         {
-            SetLanguage("nl", true);
+            SetLanguage("nl");
         }
         private void menuLanguageSpanish_Click(object sender, EventArgs e)
         {
-            SetLanguage("es", true);
+            SetLanguage("es");
         }
         private void menuLanguageFrench_Click(object sender, EventArgs e)
         {
-            SetLanguage("fr", true);
+            SetLanguage("fr");
         }
         private void menuLanguageItalian_Click(object sender, EventArgs e)
         {
-            SetLanguage("it", true);
+            SetLanguage("it");
         }
         private void menuLanguageHungarian_Click(object sender, EventArgs e)
         {
-            SetLanguage("hu", true);
+            SetLanguage("hu");
         }
         private void menuLanguageUkranian_Click(object sender, EventArgs e)
         {
-            SetLanguage("uk", true);
+            SetLanguage("uk");
         }
         private void menuLanguageSlovak_Click(object sender, EventArgs e)
         {
-            SetLanguage("sk", true);
+            SetLanguage("sk");
         }
         private void menuLanguagesPolski_Click(object sender, EventArgs e)
         {
-            SetLanguage("pl", true);
+            SetLanguage("pl");
         }
         private void menuLanguagesPortugese_Click(object sender, EventArgs e)
         {
-            SetLanguage("pt", true);
+            SetLanguage("pt");
         }
         private void menuLanguageTest_Click(object sender, EventArgs e)
         {
-            SetLanguage("af", true);
+            SetLanguage("af");
         }
         private void menuLanguageTurkish_Click(object sender, EventArgs e)
         {
-            SetLanguage("tr", true);
+            SetLanguage("tr");
         }          
-        private void finnishToolStripMenuItem_Click(object sender, EventArgs e)
+        private void menuLanguageFinnish_Click(object sender, EventArgs e)
         {
-            SetLanguage("fi", true);
+            SetLanguage("fi");
         }
-        private void latvianToolStripMenuItem_Click(object sender, EventArgs e)
+        private void menuLanguageLatvian_Click(object sender, EventArgs e)
         {
-            SetLanguage("lv", true);
+            SetLanguage("lv");
         }
-        private void lithuanianToolStripMenuItem_Click(object sender, EventArgs e)
+        private void menuLanguageLithuanian_Click(object sender, EventArgs e)
         {
-            SetLanguage("lt", true);
+            SetLanguage("lt");
         }
         private void menuLanguageChinese_Click(object sender, EventArgs e)
         {
-            SetLanguage("zh-CHS", true);
+            SetLanguage("zh-CHS");
         }
 
-
-        private void SetLanguage(string lang, bool Restart)
+        private void SetLanguage(string lang)
         {
-            if (Restart && isJobStarted)
-            {
-                TimedMessageBox(2000, gStr.gsFieldIsOpen, gStr.gsCloseFieldFirst);
-                return;
-            }
-
             //reset them all to false
             menuLanguageEnglish.Checked = false;
             menuLanguageDeutsch.Checked = false;
@@ -1675,12 +1672,11 @@ namespace AgOpenGPS
             RegistrySettings.culture = lang;
 
             RegistrySettings.Save();
-            
-            if (Restart)
-            {
-                MessageBox.Show(gStr.gsProgramWillExitPleaseRestart);
-                System.Environment.Exit(1);
-            }
+
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(RegistrySettings.culture);
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(RegistrySettings.culture);
+
+            LoadSettings(); 
         }
 
         #endregion

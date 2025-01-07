@@ -1,10 +1,12 @@
-﻿using AgOpenGPS.Properties;
+﻿using AgLibrary.Logging;
+using AgOpenGPS.Properties;
 using Microsoft.Win32;
 using OpenTK.Input;
 using System;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -394,7 +396,7 @@ namespace AgOpenGPS
                 key.SetValue("Language", culture);
                 key.SetValue("WorkingDirectory", workingDirectory);
 
-                Log.EventWriter(vehicleFileName + " Saved to registry key");
+                //Log.EventWriter(vehicleFileName + " Saved to registry key");
             }
             catch (Exception ex)
             {
@@ -406,12 +408,13 @@ namespace AgOpenGPS
             {
                 if (vehicleFileName != "Default Vehicle")
                 {
+                    //let settings finish writing to user.config
+                    Thread.Sleep(500) ;
                     SettingsIO.ExportAll(Path.Combine(vehiclesDirectory, vehicleFileName + ".xml"));
-                    //Log.EventWriter(vehicleFileName + ".XML Saved to Vehicles");
                 }
                 else
                 {
-                    //Log.EventWriter("Default Vehicle Not saved to Vehicles");
+                    Log.EventWriter("Default Vehicle Not saved to Vehicles");
                 }
             }
             catch (Exception ex)
@@ -445,9 +448,7 @@ namespace AgOpenGPS
                 baseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "AgOpenGPS");
                 fieldsDirectory = Path.Combine(baseDirectory, "Fields");
 
-                CreateDirectories();
-
-                
+                CreateDirectories();             
 
             }
             catch (Exception ex)
